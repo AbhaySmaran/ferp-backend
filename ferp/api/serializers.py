@@ -82,4 +82,4 @@ class DepartmentSerializer(serializers.ModelSerializer):
 class StaffCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffCategory
-        fields = ['st_cat_id', 'st_cat
+        fields = ['st_cat_id', 'st_cat_name', 'code']

@@ -74,8 +74,8 @@ class User(AbstractBaseUser):
     username = models.CharField(max_length=100, unique=True)
     password = models.CharField(max_length=100)
     email = models.EmailField(max_length=100, unique=True)
-    dob = models.DateField(default = '2002-03-10')
-    age = models.IntegerField(default = 22)
+    dob = models.DateField()
+    # age = models.IntegerField()
     first_name = models.CharField(max_length=100)  
     last_name = models.CharField(max_length=100, blank=True, null=True)
     phone = models.CharField(max_length=20)  
@@ -113,4 +113,5 @@ class User(AbstractBaseUser):
     def has_perm(self, perm, obj=None):
         return self.is_superuser
 
-    
+    def has_module_perms(self, app_label):
+        return self.is_superuser
