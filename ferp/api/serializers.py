@@ -61,8 +61,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserProfileView(serializers.ModelSerializer):
     class Mete:
         model = User
-        fields = ["id","user_id","username", "email","first_name","phone", "role", "st_cat","dept","dp_image","signature"]
-
+        # fields = ["id","user_id","username", "email","first_name","phone", "role", "st_cat","dept","dp_image","signature"]
+        fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
