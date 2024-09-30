@@ -31,15 +31,17 @@ class UserLoginView(APIView):
                 return Response({"errors": {"error":["User does not exist"]}}, status=status.HTTP_404_NOT_FOUND)      
 
             user = authenticate(email=email, password=password)
+
             print(serializer.data)
             print(user)
-            tokens = get_tokens_for_user(user)
-            return Response({
-                "message": "Login successful",
-                "tokens": tokens,
-                "role": user.role.role_id
-            }, status=status.HTTP_200_OK)
-            # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            if user is not None :
+                tokens = get_tokens_for_user(user)
+                return Response({
+                    "message": "Login successful",
+                    "tokens": tokens,
+                    "role": user.role.role_id
+                }, status=status.HTTP_200_OK)
+            return Response({"errors": {"error": ["Invalid credentials"]}}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 # {"errors": {"error": ["Invalid credentials"]}}
 
