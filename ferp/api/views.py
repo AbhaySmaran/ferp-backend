@@ -82,12 +82,12 @@ class UserRegisterView(APIView):
     def post(self, request, *args, **kwargs):
         # data = request.data
         # print("View",data)
-        print(request.data)
+        print("r.data",request.data)
         serializer = UserRegistrationSerializer(data = request.data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()
             return Response({"msg":"User Created"}, status = status.HTTP_201_CREATED)
-        print (serializer.errors)
+        print ("s.data",serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class UserProfileView(APIView):
