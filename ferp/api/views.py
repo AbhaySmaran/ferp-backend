@@ -6,8 +6,9 @@ from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.views import APIView
 from .models import *
 from .serializers import *
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate,login
 from rest_framework_simplejwt.tokens import RefreshToken
+# from rest_framework.authentication import SessionAuthentication
 
 def get_tokens_for_user(user): 
     refresh = RefreshToken.for_user(user)
@@ -44,15 +45,49 @@ class UserLoginView(APIView):
             return Response({"errors": {"error": ["Invalid credentials"]}}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 # {"errors": {"error": ["Invalid credentials"]}}
+# from django.views.decorators.csrf import csrf_exempt
+# from django.middleware.csrf import get_token
+# from django.views.decorators.csrf import csrf_exempt
+# from django.utils.decorators import method_decorator
+
+# Exempt the view from CSRF verification for API purposes
+# from django.contrib.auth import authenticate, login
+# from django.middleware.csrf import get_token
+
+# class UserLoginView(APIView):
+
+#     def post(self, request, *args, **kwargs):
+#         serializer = UserLoginSerializer(data=request.data)
+#         print(request.data)
+#         if serializer.is_valid():
+#             email = request.data.get('email')
+#             password = request.data.get('password')
+
+#             user = authenticate(email=email, password=password)
+#             if user is not None:
+#                 login(request, user)  # Log in the user to start the session
+
+#                 # Return CSRF token for frontend
+#                 csrf_token = get_token(request)
+
+#                 return Response({
+#                     "message": "Login successful",
+#                     "csrf_token": csrf_token  # Pass CSRF token for future requests
+#                 }, status=status.HTTP_200_OK)
+#             return Response({"errors": {"error": ["Invalid credentials"]}}, status=status.HTTP_400_BAD_REQUEST)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UserRegisterView(APIView):
     def post(self, request, *args, **kwargs):
         # data = request.data
         # print("View",data)
+        print(request.data)
         serializer = UserRegistrationSerializer(data = request.data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()
             return Response({"msg":"User Created"}, status = status.HTTP_201_CREATED)
+        print (serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class UserProfileView(APIView):

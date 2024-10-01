@@ -43,10 +43,20 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
 ]
 
-REST_FRAMEWORK={
-    'DEFAULT_AUTHENTICATION_CLASSES':[
-        'rest_framework_simplejwt.authentication.JWTAuthentication'
+# REST_FRAMEWORK={
+#     'DEFAULT_AUTHENTICATION_CLASSES':[
+#         'rest_framework_simplejwt.authentication.JWTAuthentication'
+#     ],
+# }
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
     ],
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.IsAuthenticated',
+    # ]
 }
 
 from datetime import timedelta
@@ -176,8 +186,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = "api.User"
-CORS_ORIGIN_ALLOW_ALL = True
-
 
 STATIC_URL = '/static/'
 
@@ -188,3 +196,13 @@ STATICFILES_DIRS = [
 MEDIA_URL='/media/'
 
 MEDIA_ROOT=os.path.join(BASE_DIR, 'media/')
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+    'cache-control',
+    'x-requested-with',
+    'x-csrftoken',
+]
