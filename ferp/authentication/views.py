@@ -11,6 +11,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import AllowAny,IsAuthenticated
 
 def get_tokens_for_user(user): 
     refresh = RefreshToken.for_user(user)
@@ -46,3 +47,22 @@ class UserLoginView(APIView):
                 }, status=status.HTTP_200_OK)
             return Response({"errors": {"error": ["Invalid credentials"]}}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserProfileView(APIView):
+    permission_classes=[IsAuthenticated]
+
+    def get(self,request):
+        serializer = UserProfileSerializer(request.user)
+        return Response(serializer.data)
+
+class UserUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, id,format = None):
+        user = User.objects.get(id = id)
+        serializer = UserProfileSerializer(user, data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            serializer.save()
+            return Response({"msg": "Data Updated Successfully"}, status = status.HTTP_200_OK)
+        return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)

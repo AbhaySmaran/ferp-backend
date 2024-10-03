@@ -68,23 +68,26 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         
     #     return file
 
-class UserProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        # fields = ["id","user_id","username", "email","first_name","phone", "role", "st_cat","dept","dp_image","signature"]
-        fields = '__all__'
-        extra_kwargs = {'password': {'write_only': True}}
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = '__all__'
-        extra_kwargs = {'password': {'write_only': True}}
+# class UserProfileSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         # fields = ["id","user_id","username", "email","first_name","phone", "role", "st_cat","dept","dp_image","signature"]
+#         fields = '__all__'
+#         extra_kwargs = {'password': {'write_only': True}}
 
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Role
         fields = ['role_id', 'role', 'description']
+
+class UserSerializer(serializers.ModelSerializer):
+    role = RoleSerializer()
+    class Meta:
+        model = User
+        fields = '__all__'
+        extra_kwargs = {'password': {'write_only': True}}
+
+
 
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
