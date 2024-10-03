@@ -4,13 +4,13 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 import os
 
-class UserLoginSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(max_length=255)
-    # password = serializers.CharField(write_only=True) 
-    class Meta:
-        model = User
-        fields = ['email', 'password', 'role']
-        extra_kwargs = {'role': {'read_only': True}}
+# class UserLoginSerializer(serializers.ModelSerializer):
+#     email = serializers.EmailField(max_length=255)
+#     # password = serializers.CharField(write_only=True) 
+#     class Meta:
+#         model = User
+#         fields = ['email', 'password', 'role']
+#         extra_kwargs = {'role': {'read_only': True}}
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length = 255)
@@ -26,48 +26,60 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-    def validate_dp_image(self, file):
-        allowed_extensions = ['.jpeg', '.jpg', '.png']
-        file_extension = os.path.splitext(file.name)[1].lower()
+    # def validate_dp_image(self, file):
+    #     allowed_extensions = ['.jpeg', '.jpg', '.png']
+    #     file_extension = os.path.splitext(file.name)[1].lower()
 
-        errors = []
-        if file_extension not in allowed_extensions:
-            errors.append("Only JPEG, JPG, and PNG files are allowed.")
+    #     errors = []
+    #     if file_extension not in allowed_extensions:
+    #         errors.append("Only JPEG, JPG, and PNG files are allowed.")
         
-        if file.size > 10 * 1024 * 1024:  # 15 MB
-            errors.append("File size must be less than 10 MB.")
+    #     if file.size > 10 * 1024 * 1024:  # 15 MB
+    #         errors.append("File size must be less than 10 MB.")
         
-        if errors:
-            raise serializers.ValidationError(" ".join(errors))
+    #     if errors:
+    #         raise serializers.ValidationError(" ".join(errors))
         
-        return file
+    #     return file
+    
+    def validate_dp_image(self, value):
+        if value is None:
+            return None  # No file uploaded, it's okay
+        return value
 
-    def validate_signature(self, file):
-        allowed_extensions = ['.jpeg', '.jpg', '.png']
-        file_extension = os.path.splitext(file.name)[1].lower()
+    def validate_signature(self, value):
+        if value is None:
+            return None  # No file uploaded, it's okay
+        return value
 
-        errors = []
-        if file_extension not in allowed_extensions:
-            errors.append("Only JPEG, JPG, and PNG files are allowed.")
-        
-        if file.size > 5 * 1024 * 1024:  # 15 MB
-            errors.append("File size must be less than 5 MB.")
-        
-        if errors:
-            raise serializers.ValidationError(" ".join(errors))
-        
-        return file
+    # def validate_signature(self,file): 
+    #     allowed_extensions = ['.jpeg', '.jpg', '.png']
+    #     file_extension = os.path.splitext(file.name)[1].lower()
 
-class UserProfileView(serializers.ModelSerializer):
-    class Mete:
+    #     errors = []
+    #     if file_extension not in allowed_extensions:
+    #         errors.append("Only JPEG, JPG, and PNG files are allowed.")
+        
+    #     if file.size > 5 * 1024 * 1024:  # 15 MB
+    #         errors.append("File size must be less than 5 MB.")
+        
+    #     if errors:
+    #         raise serializers.ValidationError(" ".join(errors))
+        
+    #     return file
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
         model = User
         # fields = ["id","user_id","username", "email","first_name","phone", "role", "st_cat","dept","dp_image","signature"]
         fields = '__all__'
+        extra_kwargs = {'password': {'write_only': True}}
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
+        extra_kwargs = {'password': {'write_only': True}}
 
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:

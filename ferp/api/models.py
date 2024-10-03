@@ -38,8 +38,9 @@ def dp_upload_to(instance, filename):
     # role = instance.role.role
     return f'profile_images/{year}/{instance.role.role}/{instance.username}/{new_filename}'
 
-
+            
 def signature_upload_to(instance, filename):
+    
     timestamp = int(time.time())    
     extension = os.path.splitext(filename)[1]    
     new_filename = f"{instance.username}_{timestamp}{extension}"
@@ -74,11 +75,11 @@ class User(AbstractBaseUser):
     username = models.CharField(max_length=100, unique=True)
     password = models.CharField(max_length=100)
     email = models.EmailField(max_length=100, unique=True)
-    dob = models.DateField()
-    age = models.IntegerField()
+    dob = models.DateField(blank=True, null=True)
+    age = models.IntegerField(blank=True, null=True)
     first_name = models.CharField(max_length=100)  
     last_name = models.CharField(max_length=100, blank=True, null=True)
-    phone = models.CharField(max_length=20)  
+    phone = models.CharField(max_length=20, blank=True, null=True)  
     status = models.BooleanField(default=True)  
     dp_image = models.ImageField(upload_to=dp_upload_to, blank=True, null=True) 
     signature = models.ImageField(upload_to=signature_upload_to, blank=True, null=True) 
