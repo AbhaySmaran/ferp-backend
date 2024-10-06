@@ -3,6 +3,7 @@ from .models import *
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 import os
+from datetime import datetime
 
 # class UserLoginSerializer(serializers.ModelSerializer):
 #     email = serializers.EmailField(max_length=255)
@@ -80,14 +81,6 @@ class RoleSerializer(serializers.ModelSerializer):
         model = Role
         fields = ['role_id', 'role', 'description']
 
-class UserSerializer(serializers.ModelSerializer):
-    role = RoleSerializer()
-    class Meta:
-        model = User
-        fields = '__all__'
-        extra_kwargs = {'password': {'write_only': True}}
-
-
 
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -98,3 +91,52 @@ class StaffCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffCategory
         fields = ['st_cat_id', 'st_cat_name', 'code']
+
+class UserSerializer(serializers.ModelSerializer):
+    role = RoleSerializer()
+    dept = DepartmentSerializer()
+    st_cat = StaffCategorySerializer()
+    class Meta:
+        model = User
+        fields = '__all__'
+        extra_kwargs = {'password': {'write_only': True}}
+
+
+        
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def update(self, instance, validated_data):
+        # Update basic fields
+        instance.username = validated_data.get('username', instance.username)
+        instance.email = validated_data.get('email', instance.email)
+        instance.phone = validated_data.get('phone', instance.phone)
+        instance.dob = validated_data.get('dob', instance.dob)
+        instance.dp_image = validated_data.get('dp_image', instance.dp_image)
+        instance.age = validated_data.get('age', instance.age)
+        # Check if reset password action is requested
+        if 'reset_password' in self.context:
+            # Get current date in 'ddmmyy' format
+            current_date = datetime.now().strftime('%d%m%y')
+            instance.set_password(current_date)
+
+        instance.save()
+        return instance
+
+
+class UserCSVSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'role', 'st_cat', 'dept', 'first_name', 'last_name', 'phone', 'dob', 'age', 'is_password_renew', 'password']
+
+    def create(self, validated_data):
+        user = User(**validated_data)
+        user.set_password(validated_data['password'])  # Ensure password is hashed
+        user.save()
+        return user
+
+

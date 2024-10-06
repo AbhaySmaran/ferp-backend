@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api',
+    'course',
+    'students',
     'rest_framework',
     'corsheaders',
     'rest_framework_simplejwt',
