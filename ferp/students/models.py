@@ -1,12 +1,13 @@
 from django.db import models
 from api.models import User, Role, StaffCategory,Department
 from course.models import Course
-# Create your models here.
 
-from django.db import models
+from datetime import datetime
+import os
+import time
 
 class Student(models.Model):
-    student_id = models.AutoField(primary_key=True)
+    student_id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50, blank=True, null=True)
@@ -17,10 +18,12 @@ class Student(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     roll_number = models.CharField(max_length=50, null=True, blank=True)
     lateral = models.CharField(max_length=3, blank=True, null=True)
-    batch = models.CharField(max_length=20, blank=True, null=True)
+    batch = models.CharField(max_length=20)
     college = models.CharField(max_length=100, blank=True, null=True)
-    hostel = models.CharField(max_length=3, null=True, blank=True)
-    dob = models.DateField(blank=True, null=True)
+    hostel = models.CharField(max_length=10, null=True, blank=True)
+    hostel_name = models.CharField(max_length = 20, null=True, blank=True)
+    room_no = models.CharField(max_length = 10, blank=True, null=True)
+    dob = models.CharField(max_length=20,blank=True, null=True)
     transport = models.CharField(max_length=3 , blank=True, null=True)
     gender = models.CharField(max_length=10, blank=True, null=True)
     blood_group = models.CharField(max_length=5, blank=True, null=True)
@@ -42,3 +45,37 @@ class Student(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+
+def document_upload_to(instance, filename):
+    timestamp = int(time.time())    
+    extension = os.path.splitext(filename)[1]    
+    new_filename = f"{instance.document_name}_{timestamp}{extension}"
+    return f"document_files/{instance.student.batch}/{instance.student.student_id}/{new_filename}"
+    
+
+
+class student_documents(models.Model):
+    doc_id = models.BigAutoField(primary_key=True)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    document_name = models.CharField(max_length=100)
+    document_file = models.FileField( upload_to=document_upload_to)
+    uploaded_on = models.DateField(auto_now_add=True)
+    uploaded_by = models.CharField(max_length = 50, blank=True)
+
+    def __str__(self):
+        return self.document_name
+
+
+
+class Attendance(models.Model):
+    attendance_id = models.BigAutoField(primary_key = True)
+    student = models.ForeignKey(Student, on_delete = models.CASCADE)
+    month = models.CharField(max_length = 20)
+    date = models.DateField()
+    attandance_status = models.CharField(max_length=10)
+    uploaded_on = models.DateField(auto_now_add=True)
+    uploaded_by = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return self.attendance_id

@@ -67,7 +67,7 @@ class UserManager(BaseUserManager):
         return self.create_user(email=email, password=password, username=username ,**extra_fields)
 
 class User(AbstractBaseUser):
-    id = models.AutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     user_id = models.CharField(max_length=20, unique=True, editable=False, blank=True, null=True) 
     role = models.ForeignKey('Role', on_delete=models.CASCADE)
     st_cat = models.ForeignKey('StaffCategory', on_delete=models.SET_NULL, null=True, blank=True)
@@ -75,7 +75,7 @@ class User(AbstractBaseUser):
     username = models.CharField(max_length=100, unique=True)
     password = models.CharField(max_length=100)
     email = models.EmailField(max_length=100, unique=True)
-    dob = models.DateField(blank=True, null=True)
+    dob = models.CharField(max_length=100 ,blank=True, null=True)
     age = models.IntegerField(blank=True, null=True)
     first_name = models.CharField(max_length=100)  
     last_name = models.CharField(max_length=100, blank=True, null=True)

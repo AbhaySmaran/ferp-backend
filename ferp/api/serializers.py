@@ -85,8 +85,7 @@ class RoleSerializer(serializers.ModelSerializer):
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
-        fields = ['dept_id', 'dept_name', 'dept_abbr', 'authority']
-
+        fields = '__all__'
 class StaffCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffCategory

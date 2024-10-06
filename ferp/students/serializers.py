@@ -1,9 +1,10 @@
 from rest_framework import serializers
 from .models import *
 from django.contrib.auth.hashers import make_password  # For hashing password
-
+# from course.serializers import *
 
 class StudentSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Student
         fields = '__all__'
@@ -68,4 +69,25 @@ class StudentRegisterSerializer(serializers.ModelSerializer):
         student = Student.objects.create(user=user, **validated_data)
         return student
 
-    
+
+class BulkStudentRegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = [
+            "user",'first_name', 'last_name', 'email', 'password', 'role', 
+            'st_cat', 'course', 'roll_number', 'lateral', 'batch', 'college', 'hostel', 'dob', 
+            'transport', 'gender', 'blood_group', 'caste', 'religion', 'mother_tongue', 'nationality', 
+            'last_exam_passed', 'board', 'institute_name', 'total_marks', 'year_passing', 'marks_secured', 
+            'cgpa_or_percentage', 'status', 'registered_on', 'registered_by'
+        ]
+
+    def create(self, validated_data):
+            password = validated_data.pop('password')
+
+        
+            hashed_password = make_password(password)
+            validated_data['password'] = hashed_password
+
+            # Now create the Student object, passing the User object as the ForeignKey
+            student = Student.objects.create(**validated_data)
+            return student
