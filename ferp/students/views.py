@@ -58,13 +58,13 @@ def upload_students_csv(request):
                         "last_name": row['Last_Name'],
                         "password": row['Password'],  # Will be hashed in the next step
                         "role": row['Role'],
-                        
+                        "st_catF":row['Staff_Category'],
                         "dob": row['DOB']
                     }
 
                     if photo:
                         user_data['dp_image'] = photo
-                    print(user_data)
+                    # print(user_data)
                     user_serializer = UserRegistrationSerializer(data=user_data)
 
                     if user_serializer.is_valid():
@@ -107,7 +107,7 @@ def upload_students_csv(request):
                             "cgpa_or_percentage": row['CGPA_OR_Percentage'],
                             "status": row['Status'],
                         }
-                        print(student_data)
+                        # print(student_data)
                         student_serializer = BulkStudentRegisterSerializer(data=student_data)
 
                        
@@ -277,3 +277,102 @@ class StudentListView(APIView):
         serializer = StudentSerializer(students, many=True)
         return Response(serializer.data)
         
+
+class StudentsView(APIView):
+    def get(self, request, format= None):
+        students = Student.objects.all()
+        serializer = StudentViewSerializer(students, many = True)
+        return Response(serializer.data)
+
+class StudentIndivisulaView(APIView):
+    def get(self, request, id, format=None):
+        student = Student.objects.get(student_id=id)
+        serializer = StudentViewSerializer(student)
+        return Response(serializer.data)
+        
+
+class AttendanceView(APIView):
+    def post(self, request, year, month, day):
+        
+        # Parse the date from the URL
+        date_str = f"{year}-{month}-{day}"
+        
+        try:
+            date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError:
+            return Response({"error": "Invalid date format"})
+        
+        # Retrieve the attendance data from the request
+        data = request.data.get("attendance_data", [])
+        if not data:
+            return Response({"error": "No attendance data provided"})
+
+        # Process each student's attendance
+        attendance_records = []
+        for item in data:
+            print(item)
+            student_id = item.get("student_id")
+            status = item.get("status")
+            uploaded_by = item.get("uploaded_by")
+
+            # Ensure student exists
+            try:
+                student = Student.objects.get(pk=student_id)
+            except Student.DoesNotExist:
+                return Response({"error": f"Student with id {student_id} not found"})
+            
+            # Create attendance record
+            attendance_record = {
+                "student": student.student_id,
+                "month": month,
+                "date": date,
+                "attandance_status": status,
+                "uploaded_by": uploaded_by,
+                # "uploaded_by": request.user.username if request.user.is_authenticated else "Anonymous"
+            }
+            print(attendance_record)
+            serializer = AttendanceSerializer(data=attendance_record)
+            if serializer.is_valid():
+                attendance_records.append(serializer.save())
+            else:
+                print(serializer.errors)
+                return Response(serializer.errors)
+
+        return Response({"message": "Attendance successfully logged"})
+
+    def get(self, request, year, month, day):
+        
+        date_str = f"{year}-{month}-{day}"
+        try:
+            date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError:
+            return Response({"error": "Invalid date format"}, status=status.HTTP_400_BAD_REQUEST)
+
+        attendance_records = Attendance.objects.filter(date=date)
+        if not attendance_records.exists():
+            return Response({"message": "No attendance records found for this date"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = AttendanceSerializer(attendance_records, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+class StudentUpdateView(APIView):
+    def get_object(self, pk):
+        try:
+            return Student.objects.get(pk=pk)
+        except Student.DoesNotExist:
+            return None
+
+    def put(self, request, pk):
+        student = self.get_object(pk)
+        if not student:
+            return Response({"error": "Student not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = StudentUpdateSerializer(student, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

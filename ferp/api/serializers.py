@@ -139,3 +139,35 @@ class UserCSVSerializer(serializers.ModelSerializer):
         return user
 
 
+
+class UserUploadSerializer(serializers.ModelSerializer):
+    # role = serializers.SlugRelatedField(slug_field='role', queryset=Role.objects.all())  # Assuming 'role' field exists in Role model
+    # st_cat = serializers.SlugRelatedField(slug_field='category', queryset=StaffCategory.objects.all(), allow_null=True, required=False)
+    # dept = serializers.SlugRelatedField(slug_field='name', queryset=Department.objects.all(), allow_null=True, required=False)
+
+    class Meta:
+        model = User
+        fields = [
+            'username', 'email', 'first_name', 'last_name', 'password', 'phone',
+            'dob', 'age', 'address', 'role', 'st_cat', 'dept', 'dp_image', 'signature'
+        ]
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        # Hash the password before saving
+        user = User(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data.get('last_name', ''),
+            phone=validated_data.get('phone', ''),
+            dob=validated_data.get('dob', ''),
+            age=validated_data.get('age', None),
+            address=validated_data.get('address', ''),
+            role=validated_data['role'],
+            st_cat=validated_data.get('st_cat', None),
+            dept=validated_data.get('dept', None),
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+        return user

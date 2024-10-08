@@ -13,6 +13,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.core.exceptions import ValidationError
 
+from django.core.files.storage import default_storage
 
 class UserRegisterView(APIView):
     def post(self, request, *args, **kwargs):
@@ -136,3 +137,58 @@ class CSVUploadAPIView(APIView):
         if errors:
             return Response({'errors': errors}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'success': 'Users added successfully'}, status=status.HTTP_201_CREATED)
+
+
+class BulkUserUploadView(APIView):
+    def post(self, request, format=None):
+        if 'file' not in request.FILES:
+            return Response({"error": "No file uploaded"}, status=status.HTTP_400_BAD_REQUEST)
+
+        file = request.FILES['file']
+        file_name = default_storage.save(file.name, file)
+        file_path = default_storage.path(file_name)
+
+        try:
+            with open(file_path, 'r') as f:
+                csv_reader = csv.DictReader(f)
+                users = []
+                errors = []
+                for row in csv_reader:
+                    photo = row.get('dp_image', None) 
+                    signature = row.get('signature',None)
+                    user_data = {
+                        "username": row['username'],
+                        "email": row['email'],
+                        "first_name": row['first_name'],
+                        "last_name": row.get('last_name', ''),
+                        "password": row['password'],
+                        "phone": row.get('phone', ''),
+                        "dob": row.get('dob', ''),
+                        "age": row.get('age', None),
+                        "address": row.get('address', ''),
+                        "role": row['role'],
+                        "st_cat": row.get('st_cat', None),
+                        "dept": row.get('dept', None),
+                        
+                    }
+
+                    if photo:
+                        user_data['dp_image'] = photo
+                    if signature:
+                        user_data['signature'] = signature
+                    serializer = UserUploadSerializer(data=user_data)
+                    if serializer.is_valid():
+                        users.append(serializer)
+                    else:
+                        errors.append(serializer.errors)
+                
+                if errors:
+                    return Response({"errors": errors}, status=status.HTTP_400_BAD_REQUEST)
+                
+                for user_serializer in users:
+                    user_serializer.save()
+
+            return Response({"success": "Users uploaded successfully"}, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

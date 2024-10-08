@@ -12,5 +12,5 @@ urlpatterns=[
     path('categories/',StaffCategoryListView.as_view()),
     path('dept/',DepartmentListView.as_view()),
     path('upload_csv/', CSVUploadAPIView.as_view(), name='upload_csv'),
-
+    path('uplodCSV/', BulkUserUploadView.as_view()),
 ]

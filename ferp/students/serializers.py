@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from api.serializers import *
 from django.contrib.auth.hashers import make_password  # For hashing password
 # from course.serializers import *
 
@@ -91,3 +92,80 @@ class BulkStudentRegisterSerializer(serializers.ModelSerializer):
             # Now create the Student object, passing the User object as the ForeignKey
             student = Student.objects.create(**validated_data)
             return student
+
+
+
+
+class AttendanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = ['attendance_id', 'student', 'month', 'date', 'attandance_status', 'uploaded_on', 'uploaded_by']
+
+    def validate(self, data):
+        # Ensure attendance for the same student and date is not logged twice
+        if Attendance.objects.filter(student=data['student'], date=data['date']).exists():
+            raise serializers.ValidationError("Attendance for this student on this date has already been logged.")
+        return data
+
+
+class StudentViewSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    class Meta:
+        model = Student
+        fields = '__all__'
+
+
+
+
+class StudentUpdateSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(max_length=100)  # This field belongs to the User model
+    dp_image = serializers.ImageField(required=False, allow_null=True)  # This field belongs to the User model
+
+    class Meta:
+        model = Student
+        fields = [
+            "dp_image", "username", 'first_name', 'last_name', 'email', 'role', 
+            'st_cat', 'course', 'roll_number', 'lateral', 'batch', 'college', 'hostel', 'dob', 
+            'transport', 'gender', 'blood_group', 'caste', 'religion', 'mother_tongue', 'nationality', 
+            'last_exam_passed', 'board', 'institute_name', 'total_marks', 'year_passing', 'marks_secured', 
+            'cgpa_or_percentage', 'status'
+        ]
+
+    def update(self, instance, validated_data):
+        # Handle updating the User model fields
+        user = instance.user
+        user.username = validated_data.get('username', user.username)
+        user.first_name = validated_data.get('first_name', user.first_name)
+        user.last_name = validated_data.get('last_name', user.last_name)
+        user.email = validated_data.get('email', user.email)
+        user.dp_image = validated_data.get('dp_image', user.dp_image)
+        user.role = validated_data.get('role', user.role)
+        user.st_cat = validated_data.get('st_cat', user.st_cat)
+        user.dob = validated_data.get('dob', user.dob)
+        user.save()
+
+        # Update the remaining fields of the Student model
+        instance.course = validated_data.get('course', instance.course)
+        instance.roll_number = validated_data.get('roll_number', instance.roll_number)
+        instance.lateral = validated_data.get('lateral', instance.lateral)
+        instance.batch = validated_data.get('batch', instance.batch)
+        instance.college = validated_data.get('college', instance.college)
+        instance.hostel = validated_data.get('hostel', instance.hostel)
+        instance.transport = validated_data.get('transport', instance.transport)
+        instance.gender = validated_data.get('gender', instance.gender)
+        instance.blood_group = validated_data.get('blood_group', instance.blood_group)
+        instance.caste = validated_data.get('caste', instance.caste)
+        instance.religion = validated_data.get('religion', instance.religion)
+        instance.mother_tongue = validated_data.get('mother_tongue', instance.mother_tongue)
+        instance.nationality = validated_data.get('nationality', instance.nationality)
+        instance.last_exam_passed = validated_data.get('last_exam_passed', instance.last_exam_passed)
+        instance.board = validated_data.get('board', instance.board)
+        instance.institute_name = validated_data.get('institute_name', instance.institute_name)
+        instance.total_marks = validated_data.get('total_marks', instance.total_marks)
+        instance.year_passing = validated_data.get('year_passing', instance.year_passing)
+        instance.marks_secured = validated_data.get('marks_secured', instance.marks_secured)
+        instance.cgpa_or_percentage = validated_data.get('cgpa_or_percentage', instance.cgpa_or_percentage)
+        instance.status = validated_data.get('status', instance.status)
+
+        instance.save()
+        return instance
