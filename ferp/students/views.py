@@ -359,18 +359,22 @@ class AttendanceView(APIView):
 
 
 class StudentUpdateView(APIView):
-    def get_object(self, pk):
+    def get_object(self, id):
         try:
-            return Student.objects.get(pk=pk)
+            return Student.objects.get(pk=id)
         except Student.DoesNotExist:
             return None
 
-    def put(self, request, pk):
-        student = self.get_object(pk)
+    def put(self, request, id):
+        student = Student.objects.get(student_id=id)
         if not student:
             return Response({"error": "Student not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = StudentUpdateSerializer(student, data=request.data, partial=True)
+        reset_password = request.data.get('reset_password', False)  # Check for reset_password flag
+        context = {'reset_password': reset_password}
+        print(request.data)        
+
+        serializer = StudentUpdateSerializer(student, data=request.data, partial=True, context=context)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

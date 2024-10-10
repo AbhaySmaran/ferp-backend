@@ -1,10 +1,10 @@
 from rest_framework import serializers
 from .models import *
 from api.serializers import *
-from django.contrib.auth.hashers import make_password  # For hashing password
+from django.contrib.auth.hashers import make_password  #For hashing password
 # from course.serializers import *
 
-class StudentSerializer(serializers.ModelSerializer):
+class StudentSerializer(serializers.ModelSerializer): 
 
     class Meta:
         model = Student
@@ -118,18 +118,21 @@ class StudentViewSerializer(serializers.ModelSerializer):
 
 
 class StudentUpdateSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(max_length=100)  # This field belongs to the User model
-    dp_image = serializers.ImageField(required=False, allow_null=True)  # This field belongs to the User model
-
+    # username = serializers.CharField(max_length=100)  
+    dp_image = serializers.ImageField(required=False, allow_null=True)  
+    phone = serializers.CharField(max_length = 15, required=False)
+    age = serializers.IntegerField(required=False)
     class Meta:
         model = Student
         fields = [
-            "dp_image", "username", 'first_name', 'last_name', 'email', 'role', 
+            "dp_image",'first_name', 'last_name', 'email', 'role', 'password',
             'st_cat', 'course', 'roll_number', 'lateral', 'batch', 'college', 'hostel', 'dob', 
             'transport', 'gender', 'blood_group', 'caste', 'religion', 'mother_tongue', 'nationality', 
             'last_exam_passed', 'board', 'institute_name', 'total_marks', 'year_passing', 'marks_secured', 
-            'cgpa_or_percentage', 'status'
+            'cgpa_or_percentage', 'status','phone','age'
         ]
+        
+        extra_kwargs = {'password': {'write_only': True}}
 
     def update(self, instance, validated_data):
         # Handle updating the User model fields
@@ -142,9 +145,31 @@ class StudentUpdateSerializer(serializers.ModelSerializer):
         user.role = validated_data.get('role', user.role)
         user.st_cat = validated_data.get('st_cat', user.st_cat)
         user.dob = validated_data.get('dob', user.dob)
+        user.phone = validated_data.get('phone', user.phone)
+        user.age = validated_data.get('age',user.age)
+
+        if 'reset_password' in self.context:
+            # Get current date in 'ddmmyy' format
+            current_date = datetime.now().strftime('%d%m%y')
+            
+            user.set_password(current_date)
+
+            # instance.paassword = current_date
+
+            # password = validated_data.pop('password')
+
+            # Hash the password before creating the User
+            # hashed_password = make_password(password)
+            # validated_data['password'] = hashed_password
+
+
         user.save()
 
         # Update the remaining fields of the Student model
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.email = validated_data.get('email', instance.email)
+        instance.dob = validated_data.get('dob', instance.dob)
         instance.course = validated_data.get('course', instance.course)
         instance.roll_number = validated_data.get('roll_number', instance.roll_number)
         instance.lateral = validated_data.get('lateral', instance.lateral)
@@ -166,6 +191,9 @@ class StudentUpdateSerializer(serializers.ModelSerializer):
         instance.marks_secured = validated_data.get('marks_secured', instance.marks_secured)
         instance.cgpa_or_percentage = validated_data.get('cgpa_or_percentage', instance.cgpa_or_percentage)
         instance.status = validated_data.get('status', instance.status)
+
+        
+
 
         instance.save()
         return instance
