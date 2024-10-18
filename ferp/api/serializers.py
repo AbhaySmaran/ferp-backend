@@ -117,6 +117,11 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         instance.dob = validated_data.get('dob', instance.dob)
         instance.dp_image = validated_data.get('dp_image', instance.dp_image)
         instance.age = validated_data.get('age', instance.age)
+        instance.role = validated_data.get('role',instance.role)
+        instance.st_cat = validated_data.get('st_cat', instance.st_cat)
+        instance.dept = validated_data.get('dept', instance.dept)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name',instance.last_name)
         # Check if reset password action is requested
         if 'reset_password' in self.context:
             # Get current date in 'ddmmyy' format
@@ -171,3 +176,16 @@ class UserUploadSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+
+class StatisticsSerializer(serializers.Serializer):
+    total_students = serializers.IntegerField()
+    total_faculty = serializers.IntegerField()
+    total_students_in_hostel = serializers.IntegerField()
+
+
+class FacultyUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['user_id', 'first_name', 'last_name', 'email', 'phone', 'dept']  

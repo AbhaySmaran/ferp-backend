@@ -104,7 +104,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
     def validate(self, data):
         # Ensure attendance for the same student and date is not logged twice
         if Attendance.objects.filter(student=data['student'], date=data['date']).exists():
-            raise serializers.ValidationError("Attendance for this student on this date has already been logged.")
+            raise serializers.ValidationError("Attendance for these students on this date has already been logged.")
         return data
 
 
@@ -142,11 +142,10 @@ class StudentUpdateSerializer(serializers.ModelSerializer):
         user.last_name = validated_data.get('last_name', user.last_name)
         user.email = validated_data.get('email', user.email)
         user.dp_image = validated_data.get('dp_image', user.dp_image)
-        user.role = validated_data.get('role', user.role)
-        user.st_cat = validated_data.get('st_cat', user.st_cat)
         user.dob = validated_data.get('dob', user.dob)
         user.phone = validated_data.get('phone', user.phone)
         user.age = validated_data.get('age',user.age)
+        # user.status = validated_data.get('status',user.status)
 
         if 'reset_password' in self.context:
             # Get current date in 'ddmmyy' format

@@ -37,7 +37,7 @@ class Student(models.Model):
     year_passing = models.IntegerField(blank=True, null=True)
     total_marks = models.IntegerField(blank=True, null=True)
     marks_secured = models.IntegerField(blank=True, null=True)
-    cgpa_or_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    cgpa_or_percentage = models.CharField(max_length=5, blank=True, null=True)
     status = models.CharField(max_length=10, default='Active')
     registered_on = models.DateField(auto_now_add=True)
     registered_by = models.CharField(max_length=100, blank=True)

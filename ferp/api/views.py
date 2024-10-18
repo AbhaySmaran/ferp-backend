@@ -15,6 +15,9 @@ from django.core.exceptions import ValidationError
 
 from django.core.files.storage import default_storage
 
+from students.models import Student
+
+
 class UserRegisterView(APIView):
     def post(self, request, *args, **kwargs):
         # data = request.data
@@ -84,59 +87,59 @@ class StaffCategoryListView(APIView):
         return Response(serializer.data)
     
 
-class CSVUploadAPIView(APIView):
-    parser_classes = (MultiPartParser, FormParser)  # To handle file uploads
+# class CSVUploadAPIView(APIView):
+#     parser_classes = (MultiPartParser, FormParser)  # To handle file uploads
 
-    def post(self, request, *args, **kwargs):
-        csv_file = request.FILES.get('csv_file')
+#     def post(self, request, *args, **kwargs):
+#         csv_file = request.FILES.get('csv_file')
 
-        if not csv_file:
-            return Response({'error': 'No file was provided'}, status=status.HTTP_400_BAD_REQUEST)
+#         if not csv_file:
+#             return Response({'error': 'No file was provided'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not csv_file.name.endswith('.csv'):
-            return Response({'error': 'This is not a CSV file'}, status=status.HTTP_400_BAD_REQUEST)
+#         if not csv_file.name.endswith('.csv'):
+#             return Response({'error': 'This is not a CSV file'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Read the CSV file
-        try:
-            decoded_file = csv_file.read().decode('utf-8').splitlines()
-            reader = csv.DictReader(decoded_file)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+#         # Read the CSV file
+#         try:
+#             decoded_file = csv_file.read().decode('utf-8').splitlines()
+#             reader = csv.DictReader(decoded_file)
+#         except Exception as e:
+#             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        errors = []
-        for row in reader:
-            try:
-                # Fetch ForeignKey instances
-                role = Role.objects.get(id=row['role_id'])
-                st_cat = StaffCategory.objects.get(id=row['st_cat_id'])
-                dept = Department.objects.get(id=row['dept_id'])
+#         errors = []
+#         for row in reader:
+#             try:
+#                 # Fetch ForeignKey instances
+#                 role = Role.objects.get(id=row['role_id'])
+#                 st_cat = StaffCategory.objects.get(id=row['st_cat_id'])
+#                 dept = Department.objects.get(id=row['dept_id'])
 
-                # Create the user instance
-                user = User.objects.create(
-                    username=row['username'],
-                    email=row['email'],
-                    role=role,
-                    st_cat=st_cat,
-                    dept=dept,
-                    first_name=row['first_name'],
-                    last_name=row['last_name'],
-                    phone=row['phone'],
-                    dob=row['dob'],
-                    age=int(row['age']),
-                    is_password_renew=bool(row['is_password_renew']),
-                )
-                user.set_password(row['password'])  # Set hashed password
-                user.full_clean()  # Validate the model data
-                user.save()
+#                 # Create the user instance
+#                 user = User.objects.create(
+#                     username=row['username'],
+#                     email=row['email'],
+#                     role=role,
+#                     st_cat=st_cat,
+#                     dept=dept,
+#                     first_name=row['first_name'],
+#                     last_name=row['last_name'],
+#                     phone=row['phone'],
+#                     dob=row['dob'],
+#                     age=int(row['age']),
+#                     is_password_renew=bool(row['is_password_renew']),
+#                 )
+#                 user.set_password(row['password'])  # Set hashed password
+#                 user.full_clean()  # Validate the model data
+#                 user.save()
 
-            except ValidationError as ve:
-                errors.append(f"Error in row {row['username']}: {ve.messages}")
-            except Exception as e:
-                errors.append(f"Error in row {row['username']}: {str(e)}")
+#             except ValidationError as ve:
+#                 errors.append(f"Error in row {row['username']}: {ve.messages}")
+#             except Exception as e:
+#                 errors.append(f"Error in row {row['username']}: {str(e)}")
 
-        if errors:
-            return Response({'errors': errors}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({'success': 'Users added successfully'}, status=status.HTTP_201_CREATED)
+#         if errors:
+#             return Response({'errors': errors}, status=status.HTTP_400_BAD_REQUEST)
+#         return Response({'success': 'Users added successfully'}, status=status.HTTP_201_CREATED)
 
 
 class BulkUserUploadView(APIView):
@@ -192,3 +195,44 @@ class BulkUserUploadView(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
+class StatisticsAPIView(APIView):
+    # Optional: You can add permission classes if needed
+    # permission_classes = [IsAuthenticated]
+    
+    def get(self, request, *args, **kwargs):
+        # Get the total number of students (role = 'student')
+        total_students = User.objects.filter(role__role='student').count()
+
+        # Get the total number of faculty (role = 'faculty')
+        total_faculty = User.objects.filter(role__role='faculty').count()
+
+        # Get the total number of students staying in hostel (hostel field is not null/blank)
+        total_students_in_hostel = Student.objects.filter(hostel__isnull=False).count()
+
+        # Create the data dictionary
+        data = {
+            'total_students': total_students,
+            'total_faculty': total_faculty,
+            'total_students_in_hostel': total_students_in_hostel
+        }
+
+        # Serialize the data
+        serializer = StatisticsSerializer(data)
+        return Response(serializer.data)
+
+
+
+class FacultyUserListView(APIView):
+    def get(self, request):
+        # Get the "faculty" role instance
+        faculty_role = Role.objects.filter(role='faculty').first()  # Adjust to match the role field
+        if faculty_role:
+            faculty_users = User.objects.filter(role=faculty_role)
+            serializer = FacultyUserSerializer(faculty_users, many=True)
+            return Response(serializer.data)
+        else:
+            return Response({"error": "Faculty role not found"}, status=400)
