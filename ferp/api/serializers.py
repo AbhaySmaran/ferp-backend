@@ -183,9 +183,14 @@ class StatisticsSerializer(serializers.Serializer):
     total_students = serializers.IntegerField()
     total_faculty = serializers.IntegerField()
     total_students_in_hostel = serializers.IntegerField()
+    male_students = serializers.IntegerField()
+    female_students = serializers.IntegerField()
+    hostel1_students = serializers.IntegerField()
+    hostel2_students = serializers.IntegerField()
 
 
 class FacultyUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['user_id', 'first_name', 'last_name', 'email', 'phone', 'dept']  
+        # fields = ['user_id', 'first_name', 'last_name', 'email', 'phone', 'dept']  
+        fields = '__all__'

@@ -22,12 +22,12 @@ class UserRegisterView(APIView):
     def post(self, request, *args, **kwargs):
         # data = request.data
         # print("View",data)
-        print("r.data",request.data)
+        # print("r.data",request.data)
         serializer = UserRegistrationSerializer(data = request.data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()
             return Response({"msg":"User Created"}, status = status.HTTP_201_CREATED)
-        print ("s.data",serializer.errors)
+        # print ("s.data",serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -204,20 +204,24 @@ class StatisticsAPIView(APIView):
     # permission_classes = [IsAuthenticated]
     
     def get(self, request, *args, **kwargs):
-        # Get the total number of students (role = 'student')
-        total_students = User.objects.filter(role__role='student').count()
-
-        # Get the total number of faculty (role = 'faculty')
-        total_faculty = User.objects.filter(role__role='faculty').count()
-
-        # Get the total number of students staying in hostel (hostel field is not null/blank)
-        total_students_in_hostel = Student.objects.filter(hostel__isnull=False).count()
+        
+        total_students = Student.objects.all().count()       
+        total_faculty = User.objects.filter(role__role='faculty').count()      
+        total_students_in_hostel = Student.objects.filter(hostel='yes').count()
+        male_students = Student.objects.filter(gender = 'Male').count()
+        female_students = Student.objects.filter(gender = 'Female').count()
+        hostel1_students = Student.objects.filter(hostel_name = 'hostel1').count()
+        hostel2_students = Student.objects.filter(hostel_name = 'hostel2').count()
 
         # Create the data dictionary
         data = {
             'total_students': total_students,
             'total_faculty': total_faculty,
-            'total_students_in_hostel': total_students_in_hostel
+            'total_students_in_hostel': total_students_in_hostel,
+            'male_students' : male_students,
+            'female_students' : female_students,
+            'hostel1_students' : hostel1_students,
+            'hostel2_students' : hostel2_students
         }
 
         # Serialize the data

@@ -196,3 +196,10 @@ class StudentUpdateSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+
+class BatchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ['batch']

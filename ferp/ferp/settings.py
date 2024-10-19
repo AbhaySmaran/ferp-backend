@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'api',
     'course',
     'students',
+    'subject',
     'rest_framework',
     'corsheaders',
     'rest_framework_simplejwt',

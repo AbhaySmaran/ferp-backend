@@ -25,7 +25,7 @@ class Student(models.Model):
     room_no = models.CharField(max_length = 10, blank=True, null=True)
     dob = models.CharField(max_length=20,blank=True, null=True)
     transport = models.CharField(max_length=3 , blank=True, null=True)
-    gender = models.CharField(max_length=10, blank=True, null=True)
+    gender = models.CharField(max_length=10)
     blood_group = models.CharField(max_length=5, blank=True, null=True)
     caste = models.CharField(max_length=50, blank=True, null=True)
     religion = models.CharField(max_length=50, blank=True, null=True)

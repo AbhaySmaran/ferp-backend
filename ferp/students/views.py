@@ -380,3 +380,9 @@ class StudentUpdateView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class DistinctBatchAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        # Get distinct batch values
+        distinct_batches = Student.objects.values_list('batch', flat=True).distinct()
+        return Response(distinct_batches)
