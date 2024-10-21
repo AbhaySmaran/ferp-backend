@@ -99,7 +99,7 @@ class User(AbstractBaseUser):
     is_superuser = models.BooleanField(default=False)  # Superuser flag
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username','first_name', 'phone']
+    REQUIRED_FIELDS = ['username','first_name', 'phone', 'gender']
 
     objects = UserManager()
 

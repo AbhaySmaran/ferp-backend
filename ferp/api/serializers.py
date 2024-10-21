@@ -17,7 +17,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length = 255)
     class Meta:
         model = User
-        fields = ["username", "password","email","first_name","age", "dob","phone", "role", "st_cat","dept","dp_image","signature"]
+        fields = ["username", "password","email","first_name","age","gender", "dob","phone", "role", "st_cat","dept","dp_image","signature"]
         extra_kwargs = {'password': {'write_only': True}}
 
     
@@ -122,6 +122,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         instance.dept = validated_data.get('dept', instance.dept)
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name',instance.last_name)
+        instance.gender = validated_data.get('gender', instance.gender)
         # Check if reset password action is requested
         if 'reset_password' in self.context:
             # Get current date in 'ddmmyy' format

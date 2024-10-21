@@ -39,6 +39,7 @@ class UserLoginView(APIView):
             print(serializer.data)
             print(user)
             if user is not None :
+                login(request, user)
                 tokens = get_tokens_for_user(user)
                 return Response({
                     "message": "Login successful",

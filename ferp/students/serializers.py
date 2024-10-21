@@ -129,7 +129,7 @@ class StudentUpdateSerializer(serializers.ModelSerializer):
             'st_cat', 'course', 'roll_number', 'lateral', 'batch', 'college', 'hostel', 'dob', 
             'transport', 'gender', 'blood_group', 'caste', 'religion', 'mother_tongue', 'nationality', 
             'last_exam_passed', 'board', 'institute_name', 'total_marks', 'year_passing', 'marks_secured', 
-            'cgpa_or_percentage', 'status','phone','age'
+            'cgpa_or_percentage', 'status','phone','age','hostel_name'
         ]
         
         extra_kwargs = {'password': {'write_only': True}}
@@ -191,7 +191,7 @@ class StudentUpdateSerializer(serializers.ModelSerializer):
         instance.cgpa_or_percentage = validated_data.get('cgpa_or_percentage', instance.cgpa_or_percentage)
         instance.status = validated_data.get('status', instance.status)
 
-        
+        instance.hostel_name = validated_data.get('hostel_name', instance.hostel_name)
 
 
         instance.save()

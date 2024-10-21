@@ -5,7 +5,7 @@ from django.db import models
 
 class Subject(models.Model):
     subject_id = models.AutoField(primary_key = True)
-    subject_name = models.CharField(max_length=50, blank=True, null=True)
+    subject_name = models.CharField(max_length=50)
     text_book_1 = models.CharField(max_length=50, blank=True, null=True)
     text_book_2  = models.CharField(max_length=50, blank=True, null=True)
     ref_book_1 = models.CharField(max_length=50, blank=True, null=True)
@@ -20,7 +20,7 @@ class Subject(models.Model):
 
 class SubjectAssignment(models.Model):
     batch = models.CharField(max_length=50)
-    sem = models.IntegerField()
+    sem = models.IntegerField(null=True, blank=True)
     subject_T  = models.CharField(max_length=30, blank=True, null=True)
     sub_T_Teacher = models.CharField(max_length=30, blank=True, null=True)
     subject_P = models.CharField(max_length=30, blank=True, null=True)

@@ -23,6 +23,7 @@ urlpatterns = [
     path('api/',include('api.urls')),
     path('auth/',include('authentication.urls')),
     path('student/', include('students.urls')),
+    path('subject/', include('subject.urls')),
 ]
 
 if settings.DEBUG:
