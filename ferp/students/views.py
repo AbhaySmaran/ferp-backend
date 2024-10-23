@@ -375,7 +375,7 @@ class StudentUpdateView(APIView):
         print(request.data)        
 
         serializer = StudentUpdateSerializer(student, data=request.data, partial=True, context=context)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -386,3 +386,14 @@ class DistinctBatchAPIView(APIView):
         # Get distinct batch values
         distinct_batches = Student.objects.values_list('batch', flat=True).distinct()
         return Response(distinct_batches)
+
+
+class StudentsByBatchAPIView(APIView):
+    def get(self, request, batch):
+        # Filter students by the provided batch
+        students = Student.objects.filter(batch=batch)
+        if students.exists():
+            serializer = StudentSerializer(students, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": "No students found for this batch."}, status=status.HTTP_404_NOT_FOUND)

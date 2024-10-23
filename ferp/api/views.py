@@ -200,7 +200,7 @@ class BulkUserUploadView(APIView):
 
 
 class StatisticsAPIView(APIView):
-    # Optional: You can add permission classes if needed
+    
     # permission_classes = [IsAuthenticated]
     
     def get(self, request, *args, **kwargs):

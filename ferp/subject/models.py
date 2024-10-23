@@ -5,14 +5,15 @@ from django.db import models
 
 class Subject(models.Model):
     subject_id = models.AutoField(primary_key = True)
+    subject_code = models.CharField(max_length=20)
     subject_name = models.CharField(max_length=50)
+    subject_type = models.CharField(max_length=10)
     text_book_1 = models.CharField(max_length=50, blank=True, null=True)
     text_book_2  = models.CharField(max_length=50, blank=True, null=True)
     ref_book_1 = models.CharField(max_length=50, blank=True, null=True)
     ref_book_2 = models.CharField(max_length=50, blank=True, null=True)
-    subject_type = models.CharField(max_length=10, blank=True, null=True)
-    theory_full_mark = models.IntegerField(blank=True, null=True)
-    practical_full_mark = models.IntegerField(blank=True, null=True)
+    full_mark = models.IntegerField()
+    pass_mark = models.IntegerField()
 
     def __str__(self):
         return self.subject_name

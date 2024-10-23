@@ -19,6 +19,7 @@ class Student(models.Model):
     roll_number = models.CharField(max_length=50, null=True, blank=True)
     lateral = models.CharField(max_length=3, blank=True, null=True)
     batch = models.CharField(max_length=20)
+    section = models.CharField(max_length=5, blank=True)
     college = models.CharField(max_length=100, blank=True, null=True)
     hostel = models.CharField(max_length=10, null=True, blank=True)
     hostel_name = models.CharField(max_length = 20, null=True, blank=True)

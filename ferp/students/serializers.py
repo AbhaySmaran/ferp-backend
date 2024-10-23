@@ -2,10 +2,10 @@ from rest_framework import serializers
 from .models import *
 from api.serializers import *
 from django.contrib.auth.hashers import make_password  #For hashing password
-# from course.serializers import *
+from course.serializers import *
 
 class StudentSerializer(serializers.ModelSerializer): 
-
+    
     class Meta:
         model = Student
         fields = '__all__'
@@ -110,6 +110,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
 
 class StudentViewSerializer(serializers.ModelSerializer):
     user = UserSerializer()
+    course = CourseSerializer()
     class Meta:
         model = Student
         fields = '__all__'
@@ -118,18 +119,18 @@ class StudentViewSerializer(serializers.ModelSerializer):
 
 
 class StudentUpdateSerializer(serializers.ModelSerializer):
-    # username = serializers.CharField(max_length=100)  
+    username = serializers.CharField(max_length=100, required=False)  
     dp_image = serializers.ImageField(required=False, allow_null=True)  
     phone = serializers.CharField(max_length = 15, required=False)
     age = serializers.IntegerField(required=False)
     class Meta:
         model = Student
         fields = [
-            "dp_image",'first_name', 'last_name', 'email', 'role', 'password',
+            'username',"dp_image",'first_name', 'last_name', 'email', 'role', 'password',
             'st_cat', 'course', 'roll_number', 'lateral', 'batch', 'college', 'hostel', 'dob', 
             'transport', 'gender', 'blood_group', 'caste', 'religion', 'mother_tongue', 'nationality', 
             'last_exam_passed', 'board', 'institute_name', 'total_marks', 'year_passing', 'marks_secured', 
-            'cgpa_or_percentage', 'status','phone','age','hostel_name'
+            'cgpa_or_percentage', 'status','phone','age','hostel_name','room_no'
         ]
         
         extra_kwargs = {'password': {'write_only': True}}
@@ -175,6 +176,7 @@ class StudentUpdateSerializer(serializers.ModelSerializer):
         instance.batch = validated_data.get('batch', instance.batch)
         instance.college = validated_data.get('college', instance.college)
         instance.hostel = validated_data.get('hostel', instance.hostel)
+        instance.room_no = validated_data.get('room_no', instance.room_no)
         instance.transport = validated_data.get('transport', instance.transport)
         instance.gender = validated_data.get('gender', instance.gender)
         instance.blood_group = validated_data.get('blood_group', instance.blood_group)
