@@ -10,5 +10,6 @@ urlpatterns = [
     path('attendance/<int:year>/<int:month>/<int:day>/', AttendanceView.as_view(), name='attendance-log'),
     path('student/update/<int:id>/', StudentUpdateView.as_view(), name='student-update'),
     path('distinct-batches/', DistinctBatchAPIView.as_view(), name='distinct-batches'),
-     path('students/batch/<str:batch>/', StudentsByBatchAPIView.as_view(), name='students_by_batch'),
+    path('batch/<str:batch>/', StudentsByBatchAPIView.as_view(), name='students_by_batch'),
+    path('batches/', DistinctBatchAPIView.as_view(), name='distinct-batch')
 ]

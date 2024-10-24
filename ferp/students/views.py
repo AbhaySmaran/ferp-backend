@@ -294,7 +294,7 @@ class StudentIndivisulaView(APIView):
 class AttendanceView(APIView):
     def post(self, request, year, month, day):
         
-        # Parse the date from the URL
+        
         date_str = f"{year}-{month}-{day}"
         
         try:
@@ -302,12 +302,12 @@ class AttendanceView(APIView):
         except ValueError:
             return Response({"error": "Invalid date format"})
         
-        # Retrieve the attendance data from the request
+        
         data = request.data.get("attendance_data", [])
         if not data:
             return Response({"error": "No attendance data provided"})
 
-        # Process each student's attendance
+        
         attendance_records = []
         for item in data:
             print(item)
@@ -315,13 +315,12 @@ class AttendanceView(APIView):
             status = item.get("status")
             uploaded_by = item.get("uploaded_by")
 
-            # Ensure student exists
             try:
                 student = Student.objects.get(pk=student_id)
             except Student.DoesNotExist:
                 return Response({"error": f"Student with id {student_id} not found"})
             
-            # Create attendance record
+            
             attendance_record = {
                 "student": student.student_id,
                 "month": month,
@@ -370,7 +369,7 @@ class StudentUpdateView(APIView):
         if not student:
             return Response({"error": "Student not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        reset_password = request.data.get('reset_password', False)  # Check for reset_password flag
+        reset_password = request.data.get('reset_password', False)  
         context = {'reset_password': reset_password}
         print(request.data)        
 
@@ -383,17 +382,22 @@ class StudentUpdateView(APIView):
 
 class DistinctBatchAPIView(APIView):
     def get(self, request, *args, **kwargs):
-        # Get distinct batch values
         distinct_batches = Student.objects.values_list('batch', flat=True).distinct()
         return Response(distinct_batches)
 
 
 class StudentsByBatchAPIView(APIView):
     def get(self, request, batch):
-        # Filter students by the provided batch
+       
         students = Student.objects.filter(batch=batch)
         if students.exists():
             serializer = StudentSerializer(students, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({"detail": "No students found for this batch."}, status=status.HTTP_404_NOT_FOUND)
+        
+
+class DistinctBatchAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        distinct_batches = Student.objects.values_list('batch', flat=True).distinct()
+        return Response(distinct_batches)

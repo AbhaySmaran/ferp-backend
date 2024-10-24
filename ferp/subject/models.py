@@ -5,7 +5,7 @@ from django.db import models
 
 class Subject(models.Model):
     subject_id = models.AutoField(primary_key = True)
-    subject_code = models.CharField(max_length=20)
+    subject_code = models.CharField(max_length=20, unique=True)
     subject_name = models.CharField(max_length=50)
     subject_type = models.CharField(max_length=10)
     text_book_1 = models.CharField(max_length=50, blank=True, null=True)
