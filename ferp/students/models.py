@@ -48,6 +48,8 @@ class Student(models.Model):
         return f"{self.first_name} {self.last_name}"
 
 
+# class StudentSemester
+
 def document_upload_to(instance, filename):
     timestamp = int(time.time())    
     extension = os.path.splitext(filename)[1]    
