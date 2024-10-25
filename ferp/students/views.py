@@ -106,6 +106,7 @@ def upload_students_csv(request):
                             "marks_secured": row['Markes_Secured'],
                             "cgpa_or_percentage": row['CGPA_OR_Percentage'],
                             "status": row['Status'],
+                            "section": row['Section'],
                         }
                         # print(student_data)
                         student_serializer = BulkStudentRegisterSerializer(data=student_data)
@@ -289,7 +290,9 @@ class StudentIndivisulaView(APIView):
         student = Student.objects.get(student_id=id)
         serializer = StudentViewSerializer(student)
         return Response(serializer.data)
+
         
+
 
 class AttendanceView(APIView):
     def post(self, request, year, month, day):

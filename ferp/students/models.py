@@ -48,7 +48,10 @@ class Student(models.Model):
         return f"{self.first_name} {self.last_name}"
 
 
-# class StudentSemester
+class StudentSemesterAssignment(models.Model):
+    student_sem_id = models.BigAutoField(primary_key=True)
+    semester = models.IntegerField()
+    student = models.ForeignKey(Student, on_delete= models.CASCADE)
 
 def document_upload_to(instance, filename):
     timestamp = int(time.time())    
