@@ -86,6 +86,18 @@ class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
         fields = '__all__'
+
+    def create(self, validated_data):
+        return Department.objects.create(**validated_data)
+    
+    def update(self, instance, validated_data):
+        instance.dept_name = validated_data.get('dept_name',instance.dept_name)
+        instance.HOD = validated_data.get('HOD',instance.HOD)
+        instance.dept_contact = validated_data.get('dept_contact',instance.dept_contact)
+        instance.save()
+        return instance
+
+
 class StaffCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffCategory

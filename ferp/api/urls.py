@@ -11,6 +11,7 @@ urlpatterns=[
     path('roles/',RoleListView.as_view()),
     path('categories/',StaffCategoryListView.as_view()),
     path('dept/',DepartmentListView.as_view()),
+    path('dept/<int:id>/', DepartmentListView.as_view()),
     # path('upload_csv/', CSVUploadAPIView.as_view(), name='upload_csv'),
     path('uplodCSV/', BulkUserUploadView.as_view()),
     path('statistics/', StatisticsAPIView.as_view(), name='statistics-api'),

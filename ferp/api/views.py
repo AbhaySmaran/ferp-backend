@@ -75,10 +75,29 @@ class RoleListView(APIView):
         return Response(serializer.data)
 
 class DepartmentListView(APIView):
-    def get(self, request, *args, **kwargs):
+    def get(self, request,id=None, *args, **kwargs):
         departments = Department.objects.all()
         serializer = DepartmentSerializer(departments, many=True)
+        if id is not None:
+            dept = Department.objects.get(dept_id=id)
+            serializer = DepartmentSerializer(dept)
+            return Response(serializer.data)
         return Response(serializer.data)
+    
+    def post(self,request,format=None):
+        serializer = DepartmentSerializer(data= request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({"msg":"Department Added"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors)
+
+    def put(self, request, id ,format=None):
+        dept = Department.objects.get(dept_id=id)
+        serializer = DepartmentSerializer(dept, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception= True):
+            serializer.save()
+            return Response({"msg": "Data updated"})
+        return Response(serializer.errors)
 
 class StaffCategoryListView(APIView):
     def get(self, request, *args, **kwargs):

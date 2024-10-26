@@ -291,7 +291,7 @@ class StudentIndivisulaView(APIView):
         serializer = StudentViewSerializer(student)
         return Response(serializer.data)
 
-        
+
 
 
 class AttendanceView(APIView):
@@ -313,7 +313,7 @@ class AttendanceView(APIView):
         
         attendance_records = []
         for item in data:
-            print(item)
+            # print(item)
             student_id = item.get("student_id")
             status = item.get("status")
             uploaded_by = item.get("uploaded_by")
@@ -332,7 +332,7 @@ class AttendanceView(APIView):
                 "uploaded_by": uploaded_by,
                 # "uploaded_by": request.user.username if request.user.is_authenticated else "Anonymous"
             }
-            print(attendance_record)
+            # print(attendance_record)
             serializer = AttendanceSerializer(data=attendance_record)
             if serializer.is_valid():
                 attendance_records.append(serializer.save())
