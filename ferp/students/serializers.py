@@ -37,7 +37,7 @@ class StudentRegisterSerializer(serializers.ModelSerializer):
             'st_cat', 'course', 'roll_number', 'lateral', 'batch', 'college', 'hostel', 'dob', 
             'transport', 'gender', 'blood_group', 'caste', 'religion', 'mother_tongue', 'nationality', 
             'last_exam_passed', 'board', 'institute_name', 'total_marks', 'year_passing', 'marks_secured', 
-            'cgpa_or_percentage', 'status', 'registered_on', 'registered_by'
+            'cgpa_or_percentage', 'status', 'registered_on', 'registered_by',"section",
         ]
 
     def create(self, validated_data):
@@ -57,6 +57,7 @@ class StudentRegisterSerializer(serializers.ModelSerializer):
             'role': validated_data.get('role'),
             'st_cat': validated_data.get('st_cat'),
             'dob': validated_data.get('dob'),
+            'gender': validated_data.get('gender'),
         }
         user = User.objects.create_user(**user_data)
         user.save()

@@ -59,7 +59,8 @@ def upload_students_csv(request):
                         "password": row['Password'],  # Will be hashed in the next step
                         "role": row['Role'],
                         "st_catF":row['Staff_Category'],
-                        "dob": row['DOB']
+                        "dob": row['DOB'],
+                        "gender": row['Gender'],
                     }
 
                     if photo:
@@ -108,7 +109,7 @@ def upload_students_csv(request):
                             "status": row['Status'],
                             "section": row['Section'],
                         }
-                        # print(student_data)
+                        print(student_data)
                         student_serializer = BulkStudentRegisterSerializer(data=student_data)
 
                        
