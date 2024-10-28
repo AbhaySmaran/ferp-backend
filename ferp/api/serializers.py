@@ -167,7 +167,7 @@ class UserUploadSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'username', 'email', 'first_name', 'last_name', 'password', 'phone',
-            'dob', 'age', 'address', 'role', 'st_cat', 'dept', 'dp_image', 'signature'
+            'dob', 'age', 'address', 'role', 'st_cat', 'dept', 'dp_image', 'signature','gender',
         ]
         extra_kwargs = {'password': {'write_only': True}}
 
@@ -185,6 +185,7 @@ class UserUploadSerializer(serializers.ModelSerializer):
             role=validated_data['role'],
             st_cat=validated_data.get('st_cat', None),
             dept=validated_data.get('dept', None),
+            gender = validated_data['gender'],
         )
         user.set_password(validated_data['password'])
         user.save()

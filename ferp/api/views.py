@@ -106,60 +106,6 @@ class StaffCategoryListView(APIView):
         return Response(serializer.data)
     
 
-# class CSVUploadAPIView(APIView):
-#     parser_classes = (MultiPartParser, FormParser)  # To handle file uploads
-
-#     def post(self, request, *args, **kwargs):
-#         csv_file = request.FILES.get('csv_file')
-
-#         if not csv_file:
-#             return Response({'error': 'No file was provided'}, status=status.HTTP_400_BAD_REQUEST)
-
-#         if not csv_file.name.endswith('.csv'):
-#             return Response({'error': 'This is not a CSV file'}, status=status.HTTP_400_BAD_REQUEST)
-
-#         # Read the CSV file
-#         try:
-#             decoded_file = csv_file.read().decode('utf-8').splitlines()
-#             reader = csv.DictReader(decoded_file)
-#         except Exception as e:
-#             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-#         errors = []
-#         for row in reader:
-#             try:
-#                 # Fetch ForeignKey instances
-#                 role = Role.objects.get(id=row['role_id'])
-#                 st_cat = StaffCategory.objects.get(id=row['st_cat_id'])
-#                 dept = Department.objects.get(id=row['dept_id'])
-
-#                 # Create the user instance
-#                 user = User.objects.create(
-#                     username=row['username'],
-#                     email=row['email'],
-#                     role=role,
-#                     st_cat=st_cat,
-#                     dept=dept,
-#                     first_name=row['first_name'],
-#                     last_name=row['last_name'],
-#                     phone=row['phone'],
-#                     dob=row['dob'],
-#                     age=int(row['age']),
-#                     is_password_renew=bool(row['is_password_renew']),
-#                 )
-#                 user.set_password(row['password'])  # Set hashed password
-#                 user.full_clean()  # Validate the model data
-#                 user.save()
-
-#             except ValidationError as ve:
-#                 errors.append(f"Error in row {row['username']}: {ve.messages}")
-#             except Exception as e:
-#                 errors.append(f"Error in row {row['username']}: {str(e)}")
-
-#         if errors:
-#             return Response({'errors': errors}, status=status.HTTP_400_BAD_REQUEST)
-#         return Response({'success': 'Users added successfully'}, status=status.HTTP_201_CREATED)
-
 
 class BulkUserUploadView(APIView):
     def post(self, request, format=None):
@@ -169,35 +115,39 @@ class BulkUserUploadView(APIView):
         file = request.FILES['file']
         file_name = default_storage.save(file.name, file)
         file_path = default_storage.path(file_name)
-
+        #print(file)
         try:
             with open(file_path, 'r') as f:
                 csv_reader = csv.DictReader(f)
                 users = []
                 errors = []
                 for row in csv_reader:
+                    print(row)
                     photo = row.get('dp_image', None) 
                     signature = row.get('signature',None)
                     user_data = {
-                        "username": row['username'],
-                        "email": row['email'],
-                        "first_name": row['first_name'],
-                        "last_name": row.get('last_name', ''),
-                        "password": row['password'],
-                        "phone": row.get('phone', ''),
-                        "dob": row.get('dob', ''),
-                        "age": row.get('age', None),
-                        "address": row.get('address', ''),
-                        "role": row['role'],
-                        "st_cat": row.get('st_cat', None),
-                        "dept": row.get('dept', None),
-                        
+                        "username": row['Username'],
+                        "email": row['Email'],
+                        "first_name": row['First Name'],
+                        "last_name": row.get('Last Name', ''),
+                        "password": row['Password'],
+                        "phone": row.get('Phone', ''),
+                        "dob": row.get('DOB', ''),
+                        "age": row.get('Age', None),
+                        "address": row.get('Address', ''),
+                        "role": row['Role'],
+                        "st_cat": row.get('Staff Category', None),
+                        "dept": row.get('Department', None),
+                        "gender": row.get('Gender',None)
                     }
 
                     if photo:
-                        user_data['dp_image'] = photo
+                        user_data['Dp Image'] = photo
                     if signature:
-                        user_data['signature'] = signature
+                        user_data['Signature'] = signature
+                    
+                    print(user_data)
+
                     serializer = UserUploadSerializer(data=user_data)
                     if serializer.is_valid():
                         users.append(serializer)
