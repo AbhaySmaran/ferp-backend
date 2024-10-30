@@ -60,12 +60,11 @@ class UserProfileView(APIView):
 class UserUpdateView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def put(self, request, id,format = None):
-        user = User.objects.get(id = id)
-        serializer = UserProfileSerializer(user, data = request.data)
+    def put(self, request, format = None):
+        serializer = UserProfileUpdateSerializer(request.user, data = request.data, partial=True)
         if serializer.is_valid(raise_exception = True):
             serializer.save()
-            return Response({"msg": "Data Updated Successfully"}, status = status.HTTP_200_OK)
+            return Response(serializer.data, status = status.HTTP_200_OK)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
 
@@ -78,5 +77,5 @@ class PasswordChangeView(APIView):
             user = request.user
             user.set_password(serializer.validated_data['new_password'])
             user.save()
-            return Response({"detail": "Password updated successfully"}, status=status.HTTP_200_OK)
+            return Response({"message": "Password updated successfully"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
