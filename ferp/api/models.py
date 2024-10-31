@@ -15,7 +15,7 @@ class Role(models.Model):
 
 class Department(models.Model):
     dept_id = models.AutoField(primary_key=True)
-    dept_name = models.CharField(max_length=100)
+    dept_name = models.CharField(max_length=100, unique=True)
     HOD = models.CharField(max_length=100, blank=True)
     dept_contact = models.CharField(max_length=15,blank=True)
 
