@@ -185,7 +185,7 @@ class UserUploadSerializer(serializers.ModelSerializer):
             role=validated_data['role'],
             st_cat=validated_data.get('st_cat', None),
             dept=validated_data.get('dept', None),
-            gender = validated_data['gender'],
+            gender = validated_data.get('gender',None),
         )
         user.set_password(validated_data['password'])
         user.save()
