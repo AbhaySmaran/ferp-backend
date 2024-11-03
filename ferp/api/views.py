@@ -106,7 +106,6 @@ class StaffCategoryListView(APIView):
         return Response(serializer.data)
     
 
-
 class BulkUserUploadView(APIView):
     def post(self, request, format=None):
         if 'file' not in request.FILES:
@@ -115,16 +114,18 @@ class BulkUserUploadView(APIView):
         file = request.FILES['file']
         file_name = default_storage.save(file.name, file)
         file_path = default_storage.path(file_name)
-        #print(file)
+
+        total_records = 0
+        failed_rows = []
+
         try:
             with open(file_path, 'r') as f:
                 csv_reader = csv.DictReader(f)
                 users = []
-                errors = []
-                for row in csv_reader:
-                    print(row)
-                    photo = row.get('dp_image', None) 
-                    signature = row.get('signature',None)
+
+                for row_number, row in enumerate(csv_reader, start=1):
+                    photo = row.get('dp_image', None)
+                    signature = row.get('signature', None)
                     user_data = {
                         "username": row['Username'],
                         "email": row['Email'],
@@ -138,34 +139,44 @@ class BulkUserUploadView(APIView):
                         "role": row['Role'],
                         "st_cat": row.get('Staff Category', None),
                         "dept": row.get('Department', None),
-                        "gender": row.get('Gender',None)
+                        "gender": row.get('Gender', None)
                     }
 
                     if photo:
                         user_data['Dp Image'] = photo
                     if signature:
                         user_data['Signature'] = signature
-                    
-                    print(user_data)
 
                     serializer = UserUploadSerializer(data=user_data)
+                    
                     if serializer.is_valid():
                         users.append(serializer)
+                        total_records += 1
                     else:
-                        errors.append(serializer.errors)
-                
-                if errors:
-                    return Response({"errors": errors}, status=status.HTTP_400_BAD_REQUEST)
-                
+                        # Log the row number and serializer errors
+                        failed_rows.append({
+                            "row_number": row_number,
+                            "errors": serializer.errors
+                        })
+
+                # Save all valid user objects after processing
                 for user_serializer in users:
                     user_serializer.save()
 
-            return Response({"success": "Users uploaded successfully"}, status=status.HTTP_201_CREATED)
+            # Create response data with the total records and any failed rows
+            response_data = {
+                "success": f"Users uploaded successfully. {total_records} records created.",
+                "failed_records": failed_rows
+            }
+
+            # Add a warning if there are any failed rows
+            if failed_rows:
+                response_data["warning"] = f"{len(failed_rows)} records failed validation."
+
+            return Response(response_data, status=status.HTTP_201_CREATED)
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 
 
 class StatisticsAPIView(APIView):
