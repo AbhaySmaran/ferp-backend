@@ -80,7 +80,7 @@ class BulkStudentRegisterSerializer(serializers.ModelSerializer):
             'st_cat', 'course', 'roll_number', 'lateral', 'batch', 'college', 'hostel', 'dob', 
             'transport', 'gender', 'blood_group', 'caste', 'religion', 'mother_tongue', 'nationality', 
             'last_exam_passed', 'board', 'institute_name', 'total_marks', 'year_passing', 'marks_secured', 
-            'cgpa_or_percentage', 'status', 'registered_on', 'registered_by','section',
+            'cgpa_or_percentage', 'status', 'registered_on', 'registered_by','section','hostel_name', 'room_no'
         ]
 
     def create(self, validated_data):
