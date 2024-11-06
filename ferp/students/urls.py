@@ -11,5 +11,6 @@ urlpatterns = [
     path('student/update/<int:id>/', StudentUpdateView.as_view(), name='student-update'),
     path('distinct-batches/', DistinctBatchAPIView.as_view(), name='distinct-batches'),
     path('batch/<str:batch>/', StudentsByBatchAPIView.as_view(), name='students_by_batch'),
-    path('batches/', DistinctBatchAPIView.as_view(), name='distinct-batch')
+    path('batches/', DistinctBatchAPIView.as_view(), name='distinct-batch'),
+    path('assign-section/', AssignSectionView.as_view(), name='assign-section'),
 ]
