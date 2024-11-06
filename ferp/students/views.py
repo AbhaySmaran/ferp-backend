@@ -292,3 +292,20 @@ class DistinctBatchAPIView(APIView):
     def get(self, request, *args, **kwargs):
         distinct_batches = Student.objects.values_list('batch', flat=True).distinct()
         return Response(distinct_batches)
+
+
+
+class AssignSectionView(APIView):
+    # permission_classes = [IsAuthenticated]  # optional
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        student_ids = data.get('students', [])
+        section = data.get('section')
+
+        # Update section for selected students
+        if student_ids and section:
+            Student.objects.filter(student_id__in=student_ids).update(section=section)
+            return Response({"message": "Section assigned successfully"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Invalid data"}, status=status.HTTP_400_BAD_REQUEST)
