@@ -24,6 +24,7 @@ urlpatterns = [
     path('auth/',include('authentication.urls')),
     path('student/', include('students.urls')),
     path('subject/', include('subject.urls')),
+    path('qn/',include('questions.urls')),
 ]
 
 if settings.DEBUG:
