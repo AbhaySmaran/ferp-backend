@@ -16,7 +16,9 @@ class QuestionList(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = QuestionSerializer(data=request.data)
+        data = request.data.copy()
+        data['faculty'] = request.user.id
+        serializer = QuestionSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

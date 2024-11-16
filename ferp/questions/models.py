@@ -4,56 +4,29 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class Question(models.Model):
-    QUESTION_TYPES = [
-        ('short', 'Short Answer'),
-        ('medium', 'Medium Answer'),
-        ('long', 'Long Answer'),
-        ('mcq', 'Multiple Choice Question'),
-    ]
-
-    LEARNING_LEVELS = [
-        ('remembering', 'Remembering'),
-        ('application', 'Application'),
-        ('evaluation', 'Evaluation'),
-    ]
-
-    DIFFICULTY_LEVELS = [
-        ('simple', 'Simple'),
-        ('moderate', 'Moderate'),
-        ('complex', 'Complex'),
-    ]
-
-    VERIFICATION_STATUS = [
-        ('verified', 'Verified'),
-        ('not_verified', 'Not Verified'),
-    ]
-
-    STATUS_CHOICES = [
-        ('active', 'Active'),
-        ('inactive', 'Inactive'),
-    ]
-
     qn_id = models.BigAutoField(primary_key=True)
-    qn_title = models.TextField()
-    option_1 = models.CharField(max_length=200, blank=True, null=True)
-    option_2 = models.CharField(max_length=200, blank=True, null=True)
-    option_3 = models.CharField(max_length=200, blank=True, null=True)
-    option_4 = models.CharField(max_length=200, blank=True, null=True)
-    correct_ans = models.CharField(
-        max_length=20,
-        blank=True,
-        null=True,
-        help_text="Specify the correct answer if question type is MCQ"
-    )
+    qn_title = models.CharField(max_length=100)
+    qn_area = models.TextField()
+    qn_type = models.CharField(max_length = 250)
+    option_1_number = models.PositiveSmallIntegerField(default=1) 
+    option_1_value = models.CharField(max_length=200, blank=True, null=True)
+    option_2_number = models.PositiveSmallIntegerField(default=2) 
+    option_2_value = models.CharField(max_length=200, blank=True, null=True)
+    option_3_number = models.PositiveSmallIntegerField(default=3)
+    option_3_value = models.CharField(max_length=200, blank=True, null=True)
+    option_4_number = models.PositiveSmallIntegerField(default=4) 
+    option_4_value = models.CharField(max_length=200, blank=True, null=True)
+    
+    correct_ans = models.PositiveSmallIntegerField(blank=True,null=True)
     subject = models.CharField(max_length=50)
-    qn_area = models.CharField(max_length=10, choices=QUESTION_TYPES,blank=True)
+    
     faculty = models.ForeignKey(User,on_delete=models.SET_NULL, related_name='questions_uploaded',null=True, blank=True)
     moderator = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='moderated_questions', null=True, blank=True)
-    learning_level = models.CharField(max_length=20, choices=LEARNING_LEVELS,blank=True)
-    difficulty_level = models.CharField(max_length=20, choices=DIFFICULTY_LEVELS,blank=True)
+    learning_level = models.CharField(max_length=20,blank=True)
+    difficulty_level = models.CharField(max_length=20,blank=True)
     time_required = models.IntegerField(help_text="Time required to solve the question")
-    verification_status = models.CharField(max_length=15, choices=VERIFICATION_STATUS, default='not_verified')
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
+    verification_status = models.CharField(max_length=15, default='not_verified')
+    status = models.CharField(max_length=10, default='active')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -62,9 +35,18 @@ class Question(models.Model):
         if not self.moderator:
             self.moderator = self.faculty
         # Ensure correct answer is only set for MCQ type questions
-        if self.qn_area != 'mcq':
+        if self.qn_type != 'mcq':
             self.correct_ans = None
         super().save(*args, **kwargs)
+
+    def get_correct_answer_value(self):
+        options = {
+            1: self.option_1_value,
+            2: self.option_2_value,
+            3: self.option_3_value,
+            4: self.option_4_value,
+        }
+        return options.get(self.correct_ans)
 
     def __str__(self):
         return f"{self.qn_title} - {self.subject}"
