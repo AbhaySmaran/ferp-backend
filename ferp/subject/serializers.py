@@ -24,10 +24,12 @@ class SubjectSerializer(serializers.ModelSerializer):
         instance.ref_book_2 = validated_data.get('ref_book_2', instance.ref_book_2)
         instance.full_mark = validated_data.get('full_mark', instance.full_mark)
         instance.pass_mark = validated_data.get('pass_mark', instance.pass_mark)
+        instance.semester = validated_data.get('semester', instance.semester)
 
         # Save the updated instance
         instance.save()
         return instance
+    
 
 class BatchSerializer(serializers.ModelSerializer):
     class Meta:

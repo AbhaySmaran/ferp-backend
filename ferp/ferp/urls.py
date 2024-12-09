@@ -25,6 +25,7 @@ urlpatterns = [
     path('student/', include('students.urls')),
     path('subject/', include('subject.urls')),
     path('qn/',include('questions.urls')),
+    path('exams/',include('examination.urls')),
 ]
 
 if settings.DEBUG:

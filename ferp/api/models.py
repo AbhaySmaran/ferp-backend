@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from datetime import datetime
 import os
 import time
-
+from django.conf import settings
 
 class Role(models.Model):
     role_id = models.AutoField(primary_key=True)
@@ -16,7 +16,7 @@ class Role(models.Model):
 class Department(models.Model):
     dept_id = models.AutoField(primary_key=True)
     dept_name = models.CharField(max_length=100, unique=True)
-    HOD = models.CharField(max_length=100, blank=True)
+    HOD = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     dept_contact = models.CharField(max_length=15,blank=True)
 
     def __str__(self):

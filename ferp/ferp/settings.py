@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'authentication',
     'questions',
+    'examination',
+    'leaves',
 ]
 
 REST_FRAMEWORK={

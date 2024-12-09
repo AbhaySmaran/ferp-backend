@@ -34,8 +34,14 @@ class QuestionDetail(APIView):
 
     def get(self, request, pk):
         question = self.get_object(pk)
+        # print(question.get_correct_answer_value())
+        # print(question)
+        # question['correct_answer_value'] = question.get_correct_answer_value()
         serializer = QuestionSerializer(question)
-        return Response(serializer.data)
+        # print(serializer.data)
+        data = serializer.data
+        data['correct_ans_value'] = question.get_correct_answer_value()
+        return Response(data)
 
     def put(self, request, pk):
         question = self.get_object(pk)

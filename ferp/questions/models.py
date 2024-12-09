@@ -47,6 +47,8 @@ class Question(models.Model):
             4: self.option_4_value,
         }
         return options.get(self.correct_ans)
+        
+
 
     def __str__(self):
         return f"{self.qn_title} - {self.subject}"

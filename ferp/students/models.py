@@ -20,6 +20,7 @@ class Student(models.Model):
     lateral = models.CharField(max_length=3, blank=True, null=True)
     batch = models.CharField(max_length=20)
     section = models.CharField(max_length=5, blank=True)
+    semester_or_year = models.IntegerField(blank=True)
     college = models.CharField(max_length=100, blank=True, null=True)
     hostel = models.CharField(max_length=10, null=True, blank=True)
     hostel_name = models.CharField(max_length = 20, null=True, blank=True)

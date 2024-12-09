@@ -14,6 +14,7 @@ class Subject(models.Model):
     ref_book_2 = models.CharField(max_length=50, blank=True, null=True)
     full_mark = models.IntegerField()
     pass_mark = models.IntegerField()
+    semester = models.IntegerField()
 
     def __str__(self):
         return self.subject_name
